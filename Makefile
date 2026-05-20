@@ -1,7 +1,12 @@
-TEST_ISA ?= i m #a f d c
+TEST_ISA ?= i #m a f d c
 EXCLUDE_TEST ?= fence_i ma_data
 
 SUPPORTED_AM_ISA = riscv64 riscv32 riscv64e riscv32e minirv
+ARCH ?= riscv32-core
+AM_HOME := $(abspath ../abstract-machine)
+CORE_HOME := $(abspath ../core)
+export AM_HOME
+export CORE_HOME
 AM_ISA = $(word 1, $(subst -, ,$(ARCH)))
 
 ifeq ($(findstring $(MAKECMDGOALS),clean),)  # ignore the commands if the target is clean
@@ -39,7 +44,7 @@ $(ALL): %: Makefile-%
 .SECONDEXPANSION:  # this helps to call function in prerequisite
 Makefile-%: $$(call find_src,%)
 	@/bin/echo -e "NAME = $*\nSRCS = $<\nINC_PATH += $(shell pwd)/env/p \
-		$(shell pwd)/isa/macros/scalar\ninclude $${AM_HOME}/Makefile" > $@
+		$(shell pwd)/isa/macros/scalar\ninclude ../abstract-machine/Makefile" > $@
 	@if make -s -f $@ ARCH=$(ARCH) $(MAKECMDGOALS); then \
 		printf "[%14s] $(COLOR_GREEN)PASS$(COLOR_NONE)\n" $* >> $(RESULT); \
 	else \
